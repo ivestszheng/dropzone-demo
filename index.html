@@ -32,9 +32,26 @@
         <svg class="upload-icon" fill="currentcolor" t="1754740350687" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1474" width="200" height="200"><path d="M770.354 352.086C721.58 240.25 610.168 162.002 480.364 162.002 305.644 162.002 164 303.642 164 478.364c0 0.954 0.134 1.874 0.142 2.824C74.332 496.22 5.818 574.102 5.818 668.182 5.818 773.016 90.804 858 195.638 858h601.088v-2.186c124.814-15.598 221.458-121.862 221.458-250.906 0-137.998-110.506-249.994-247.83-252.822zM575.272 510.002v221.454H448.726V510.002H353.82L512 351.82l158.182 158.182h-94.91z" p-id="1475"></path></svg>
     </form>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.js"></script>
-    <script>
+    <!-- 添加 type="module" 属性以支持 ES 模块 -->
+    <script type="module">
+    import config from './config.js';
         Dropzone.autoDiscover = false;
+        // 使用配置初始化 Dropzone
+        const myDropzone = new Dropzone("#myDropzone", {
+            ...config,
+            init: function () {
+                // 调用抽取的SVG设置函数
+                setupSvgIcon(this);
 
+                this.on('success', function (file, response) {
+                    console.log('上传成功', response);
+                });
+                this.on('error', function (file, errorMessage) {
+                    console.error('上传失败', errorMessage);
+                });
+            }
+        });
+        
         // 将SVG相关逻辑抽取到单独函数中
         function setupSvgIcon(dropzoneInstance) {
             // 获取SVG元素
@@ -62,29 +79,6 @@
                 }
             });
         }
-
-        fetch('./config.json')
-            .then(response => response.json())
-            .then(config => {
-                // 配置加载完成后手动初始化 Dropzone
-                const myDropzone = new Dropzone("#myDropzone", {
-                    ...config,
-                    init: function () {
-                        // 调用抽取的SVG设置函数
-                        setupSvgIcon(this);
-
-                        this.on('success', function (file, response) {
-                            console.log('上传成功', response);
-                        });
-                        this.on('error', function (file, errorMessage) {
-                            console.error('上传失败', errorMessage);
-                        });
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('加载配置文件失败:', error);
-            });
     </script>
 </body>
 </html>
